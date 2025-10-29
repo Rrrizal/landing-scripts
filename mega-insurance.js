@@ -1,52 +1,36 @@
-function openForm(productName) {
-  const modal = document.getElementById('purchaseModal');
-  const productInput = document.getElementById('productName');
-  if (modal && productInput) {
-    productInput.value = productName;
-    modal.classList.add('active');
-    modal.style.display = 'flex';
-  }
+const modal = document.getElementById("purchaseModal");
+const productInput = document.getElementById("productName");
+
+function openForm(product) {
+  productInput.value = product;
+  modal.classList.add("active");
 }
 
 function closeForm() {
-  const modal = document.getElementById('purchaseModal');
-  if (modal) {
-    modal.classList.remove('active');
-    modal.style.display = 'none';
-  }
+  modal.classList.remove("active");
 }
 
-function submitForm(event) {
-  event.preventDefault();
-
-  const data = {
-    productName: document.getElementById('productName').value,
-    nama: document.getElementById('nama').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    plat: document.getElementById('plat').value
+function submitForm(e) {
+  e.preventDefault();
+  const formData = {
+    productName: productInput.value,
+    nama: document.getElementById("nama").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    plat: document.getElementById("plat").value,
   };
 
-  console.log("Data form:", data);
-  alert(
-    "✅ Data berhasil disubmit!\n\n" +
-    "Produk: " + data.productName + "\n" +
-    "Nama: " + data.nama + "\n" +
-    "Email: " + data.email + "\n" +
-    "Telepon: " + data.phone + "\n" +
-    "Plat: " + data.plat
-  );
-
-  closeForm();
+  fetch("http://192.168.152.72:7001/simulation-0.0.1-SNAPSHOT/api/bfa/maximum-credit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      alert("Data berhasil dikirim! Terima kasih, " + formData.nama);
+      closeForm();
+    })
+    .catch((err) => {
+      alert("Gagal mengirim data: " + err);
+    });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("btnComprehensive").addEventListener("click", function() {
-    openForm("MV COMPREHENSIVE");
-  });
-  document.getElementById("btnTlo").addEventListener("click", function() {
-    openForm("TOTAL LOSS ONLY");
-  });
-  document.getElementById("btnCancel").addEventListener("click", closeForm);
-  document.getElementById("purchaseForm").addEventListener("submit", submitForm);
-});
